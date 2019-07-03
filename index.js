@@ -79,14 +79,3 @@ class Debouncer extends EventEmitter {
 }
 
 module.exports = Debouncer;
-
-const instance = new Debouncer(
-    4000,
-    data => console.log('lol', data)
-);
-
-instance.on('errorInCurrentIteration', console.error);
-
-instance.on('responseFromCallback', console.log);
-
-instance.debounce(3);
