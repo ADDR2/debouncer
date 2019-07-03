@@ -51,6 +51,7 @@ class Debouncer extends EventEmitter {
 
     reboot(time = 1000, callback = () => {}, options = baseOptions) {
         validateParams(time, callback, options);
+        this.generatedDebouncer.next().value(undefined, true);
 
         this.options = options;
         this.events = this.options.events;

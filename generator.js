@@ -38,7 +38,7 @@ function* debouncerGenerator(instanceTime, instanceCallback) {
     };
 
     while(!shutdown) {
-        yield (data = lastData, shutdownNow, changes = {}) => {
+        yield (data, shutdownNow, changes = {}) => {
             if (shutdownNow) {
                 timer && clearTimeout(timer);
                 shutdown = true;
@@ -50,7 +50,7 @@ function* debouncerGenerator(instanceTime, instanceCallback) {
             if (changes.newCallback) callback = changes.newCallback;
             if (changes.shutdownAfterCurrentIteration) shutdown = true;
 
-            currentData = data;
+            data !== undefined && (currentData = data);
             firstTime && recursiveTimer();
             firstTime = false;
 
