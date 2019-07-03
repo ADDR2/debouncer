@@ -1,0 +1,22 @@
+{
+  "name": "@addr/debouncer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm i && mocha tests/**/*.test.js"
+  },
+  "keywords": [
+    "debouncer"
+  ],
+  "author": "Amaro Duarte",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.11"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.1.4",
+    "sinon": "^7.3.2"
+  }
+}
