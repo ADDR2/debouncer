@@ -1,12 +1,7 @@
 const EventEmitter = require('events');
 
 const debouncerGenerator = require('./generator');
-const {
-    validateTime,
-    validateCallback,
-    validateOptions,
-    validateParams
-} = require('./validations');
+const validator = require('./validations');
 
 const baseOptions = {
     nullIterationsToShutdown: 3,
@@ -29,7 +24,7 @@ class Debouncer extends EventEmitter {
 
         const paramOptions = { ...baseOptions, ...options };
 
-        validateParams(time, callback, paramOptions);
+        validator.validateParams(time, callback, paramOptions);
         this.options = paramOptions;
         this.events = this.options.events;
         this.generatedDebouncer = debouncerGenerator.call(this, time, callback);
@@ -52,7 +47,7 @@ class Debouncer extends EventEmitter {
     }
 
     reboot(time = 1000, callback = () => {}, options = baseOptions) {
-        validateParams(time, callback, options);
+        validator.validateParams(time, callback, options);
         this.shutdownNow();
 
         this.options = options;
@@ -61,13 +56,13 @@ class Debouncer extends EventEmitter {
     }
 
     changeTime(newTime = 1000) {
-        validateTime(newTime);
+        validator.validateTime(newTime);
 
         this.generatedDebouncer.next().value({ type: 'changeTime', params: { newTime } });
     }
 
     changeCallback(newCallback = () => {}) {
-        validateCallback(newCallback);
+        validator.validateCallback(newCallback);
 
         this.generatedDebouncer.next().value({ type: 'changeCallback', params: { newCallback } });
     }
@@ -75,7 +70,7 @@ class Debouncer extends EventEmitter {
     changeOptions(newOptions = {}) {
         const paramOptions = { ...baseOptions, ...newOptions };
 
-        validateOptions(paramOptions);
+        validator.validateOptions(paramOptions);
 
         this.options = paramOptions;
         this.events = this.options.events;
