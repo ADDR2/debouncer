@@ -24,11 +24,13 @@ const baseOptions = {
 };
 
 class Debouncer extends EventEmitter {
-    constructor(time = 1000, callback = () => {}, options = baseOptions) {
+    constructor(time = 1000, callback = () => {}, options = {}) {
         super();
 
-        validateParams(time, callback, options);
-        this.options = options;
+        const paramOptions = { ...baseOptions, ...options };
+
+        validateParams(time, callback, paramOptions);
+        this.options = paramOptions;
         this.events = this.options.events;
         this.generatedDebouncer = debouncerGenerator.call(this, time, callback);
 
@@ -38,20 +40,20 @@ class Debouncer extends EventEmitter {
     }
 
     debounce(data) {
-        this.generatedDebouncer.next().value(data);
+        this.generatedDebouncer.next().value({ type: 'addData', params: { data } });
     }
 
     shutdownNow() {
-        this.generatedDebouncer.next().value(undefined, true);
+        this.generatedDebouncer.next().value({ type: 'shutdownNow' });
     }
 
     shutdownAfterCurrentIteration() {
-        this.generatedDebouncer.next().value(undefined, false, { shutdownAfterCurrentIteration: true });
+        this.generatedDebouncer.next().value({ type: 'shutdownAfterCurrentIteration' });
     }
 
     reboot(time = 1000, callback = () => {}, options = baseOptions) {
         validateParams(time, callback, options);
-        this.generatedDebouncer.next().value(undefined, true);
+        this.shutdownNow();
 
         this.options = options;
         this.events = this.options.events;
@@ -61,19 +63,21 @@ class Debouncer extends EventEmitter {
     changeTime(newTime = 1000) {
         validateTime(newTime);
 
-        this.generatedDebouncer.next().value(undefined, false, { newTime });
+        this.generatedDebouncer.next().value({ type: 'changeTime', params: { newTime } });
     }
 
     changeCallback(newCallback = () => {}) {
         validateCallback(newCallback);
 
-        this.generatedDebouncer.next().value(undefined, false, { newCallback });
+        this.generatedDebouncer.next().value({ type: 'changeCallback', params: { newCallback } });
     }
 
-    changeOptions(newOptions = baseOptions) {
-        validateOptions(newOptions);
+    changeOptions(newOptions = {}) {
+        const paramOptions = { ...baseOptions, ...newOptions };
 
-        this.options = newOptions
+        validateOptions(paramOptions);
+
+        this.options = paramOptions;
         this.events = this.options.events;
     }
 

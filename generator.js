@@ -5,7 +5,7 @@ function* debouncerGenerator(instanceTime, instanceCallback) {
     let callback = instanceCallback;
     let shutdown = false;
     let timer = null;
-    let lastData = null;
+    let lastData;
     let currentData = null;
     let firstTime = true;
     let nullIterations = 0;
@@ -29,6 +29,7 @@ function* debouncerGenerator(instanceTime, instanceCallback) {
 
                     this.options.shutdownAfterError && (shutdown = true);
                 } finally {
+                    !shutdown && recursiveTimer();
                     shutdown && clearTimeout(timer);
                     this.options.nullIterationsToShutdown && this.options.nullIterationsToShutdown === nullIterations && clearTimeout(timer);
                 }
@@ -38,23 +39,36 @@ function* debouncerGenerator(instanceTime, instanceCallback) {
     };
 
     while(!shutdown) {
-        yield (data, shutdownNow, changes = {}) => {
-            if (shutdownNow) {
-                timer && clearTimeout(timer);
-                shutdown = true;
+        yield ({ type, params }) => {
+            switch(type) {
+                case 'shutdownNow':
+                    timer && clearTimeout(timer);
+                    shutdown = true;
+    
+                    return false;
+                case 'addData':
+                    currentData = params.data;
+                    firstTime && recursiveTimer();
+                    firstTime = false;
 
-                return false;
+                    return true;
+
+                case 'shutdownAfterCurrentIteration':
+                    shutdown = true;
+                    firstTime && recursiveTimer();
+                    firstTime = false;
+
+                    return true;
+
+                case 'changeTime':
+                    time = params.newTime;
+
+                    return true;
+                case 'changeCallback':
+                    callback = params.newCallback;
+
+                    return true;
             }
-
-            if (changes.newTime) time = changes.newTime;
-            if (changes.newCallback) callback = changes.newCallback;
-            if (changes.shutdownAfterCurrentIteration) shutdown = true;
-
-            data !== undefined && (currentData = data);
-            firstTime && recursiveTimer();
-            firstTime = false;
-
-            return true;
         };
     }
 
