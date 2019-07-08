@@ -1,9 +1,12 @@
 const { expect } = require('chai');
 const { createSandbox } = require('sinon');
+const Sandbox = createSandbox();
 
 const validator = require('../validations');
 const debouncerGenerator = require('../generator');
 const Debouncer = require('../index');
+
+const { createInstanceWithFakeNext } = require('../helpers/Instance-faker');
 
 const baseOptions = {
     nullIterationsToShutdown: 3,
@@ -23,8 +26,6 @@ const baseOptions = {
 describe('Debouncer class', () => {
     describe('constructor', function() {
         before(() => {
-            Sandbox = createSandbox();
-
             this.validateParamsSucceeded = true;
             this.errorMessage = 'The Error';
             this.validateParamsStub = Sandbox.stub(validator, 'validateParams').callsFake(() => {
@@ -241,15 +242,214 @@ describe('Debouncer class', () => {
     });
 
     describe('debounce', function() {
-        
+        before(() => {
+            this.valueSuceeded = true;
+            this.nextSuceeded = true;
+            this.errorMessage = 'The Error';
+        });
+
+        afterEach(() => {
+            this.valueSuceeded = true;
+            this.nextSuceeded = true;
+            this.errorMessage = 'The Error';
+        });
+
+        it('should call next function when everything is ok', () => {
+            const instance = createInstanceWithFakeNext.call(this, Sandbox);
+            const data = { empty: 'something random' };
+
+            instance.debounce(data);
+
+            expect(instance.generatedDebouncer.next.callCount).to.eq(1);
+            expect(instance.generatedDebouncer.next.getCall(0).args).to.deep.eq([]);
+            expect(instance.generatedDebouncer.next().value.callCount).to.eq(1);
+            expect(instance.generatedDebouncer.next().value.getCall(0).args).to.deep.eq([ { type: 'addData', params: { data } } ]);
+        });
+
+        it('should throw error when next function throws', () => {
+            this.nextSuceeded = false;
+            let errorThrown = false;
+
+            const instance = createInstanceWithFakeNext.call(this, Sandbox);
+
+            try {
+                instance.debounce({ empty: 'something random' });
+            } catch(error) {
+                errorThrown = true;
+
+                // Error assertions
+                expect(error).to.be.an.instanceOf(Error);
+                expect(error.message).to.eq(this.errorMessage);
+
+                // Instance assertions
+                expect(instance.generatedDebouncer.next.callCount).to.eq(1);
+            } finally {
+                expect(errorThrown).to.eq(true);
+            }
+        });
+
+        it('should throw error when value function throws', () => {
+            this.valueSuceeded = false;
+            let errorThrown = false;
+
+            const instance = createInstanceWithFakeNext.call(this, Sandbox);
+
+            try {
+                instance.debounce({ empty: 'something random' });
+            } catch(error) {
+                errorThrown = true;
+
+                // Error assertions
+                expect(error).to.be.an.instanceOf(Error);
+                expect(error.message).to.eq(this.errorMessage);
+
+                // Instance assertions
+                expect(instance.generatedDebouncer.next.callCount).to.eq(1);
+                expect(instance.generatedDebouncer.next().value.callCount).to.eq(1);
+            } finally {
+                expect(errorThrown).to.eq(true);
+            }
+        });
     });
 
     describe('shutdownNow', function() {
-        
+        before(() => {
+            this.valueSuceeded = true;
+            this.nextSuceeded = true;
+            this.errorMessage = 'The Error';
+        });
+
+        afterEach(() => {
+            this.valueSuceeded = true;
+            this.nextSuceeded = true;
+            this.errorMessage = 'The Error';
+        });
+
+        it('should call next function when everything is ok', () => {
+            const instance = createInstanceWithFakeNext.call(this, Sandbox);
+
+            instance.shutdownNow();
+
+            expect(instance.generatedDebouncer.next.callCount).to.eq(1);
+            expect(instance.generatedDebouncer.next.getCall(0).args).to.deep.eq([]);
+            expect(instance.generatedDebouncer.next().value.callCount).to.eq(1);
+            expect(instance.generatedDebouncer.next().value.getCall(0).args).to.deep.eq([ { type: 'shutdownNow' } ]);
+        });
+
+        it('should throw error when next function throws', () => {
+            this.nextSuceeded = false;
+            let errorThrown = false;
+
+            const instance = createInstanceWithFakeNext.call(this, Sandbox);
+
+            try {
+                instance.shutdownNow();
+            } catch(error) {
+                errorThrown = true;
+
+                // Error assertions
+                expect(error).to.be.an.instanceOf(Error);
+                expect(error.message).to.eq(this.errorMessage);
+
+                // Instance assertions
+                expect(instance.generatedDebouncer.next.callCount).to.eq(1);
+            } finally {
+                expect(errorThrown).to.eq(true);
+            }
+        });
+
+        it('should throw error when value function throws', () => {
+            this.valueSuceeded = false;
+            let errorThrown = false;
+
+            const instance = createInstanceWithFakeNext.call(this, Sandbox);
+
+            try {
+                instance.shutdownNow();
+            } catch(error) {
+                errorThrown = true;
+
+                // Error assertions
+                expect(error).to.be.an.instanceOf(Error);
+                expect(error.message).to.eq(this.errorMessage);
+
+                // Instance assertions
+                expect(instance.generatedDebouncer.next.callCount).to.eq(1);
+                expect(instance.generatedDebouncer.next().value.callCount).to.eq(1);
+            } finally {
+                expect(errorThrown).to.eq(true);
+            }
+        });
     });
 
     describe('shutdownAfterCurrentIteration', function() {
-        
+        before(() => {
+            this.valueSuceeded = true;
+            this.nextSuceeded = true;
+            this.errorMessage = 'The Error';
+        });
+
+        afterEach(() => {
+            this.valueSuceeded = true;
+            this.nextSuceeded = true;
+            this.errorMessage = 'The Error';
+        });
+
+        it('should call next function when everything is ok', () => {
+            const instance = createInstanceWithFakeNext.call(this, Sandbox);
+
+            instance.shutdownAfterCurrentIteration();
+
+            expect(instance.generatedDebouncer.next.callCount).to.eq(1);
+            expect(instance.generatedDebouncer.next.getCall(0).args).to.deep.eq([]);
+            expect(instance.generatedDebouncer.next().value.callCount).to.eq(1);
+            expect(instance.generatedDebouncer.next().value.getCall(0).args).to.deep.eq([ { type: 'shutdownAfterCurrentIteration' } ]);
+        });
+
+        it('should throw error when next function throws', () => {
+            this.nextSuceeded = false;
+            let errorThrown = false;
+
+            const instance = createInstanceWithFakeNext.call(this, Sandbox);
+
+            try {
+                instance.shutdownAfterCurrentIteration();
+            } catch(error) {
+                errorThrown = true;
+
+                // Error assertions
+                expect(error).to.be.an.instanceOf(Error);
+                expect(error.message).to.eq(this.errorMessage);
+
+                // Instance assertions
+                expect(instance.generatedDebouncer.next.callCount).to.eq(1);
+            } finally {
+                expect(errorThrown).to.eq(true);
+            }
+        });
+
+        it('should throw error when value function throws', () => {
+            this.valueSuceeded = false;
+            let errorThrown = false;
+
+            const instance = createInstanceWithFakeNext.call(this, Sandbox);
+
+            try {
+                instance.shutdownAfterCurrentIteration();
+            } catch(error) {
+                errorThrown = true;
+
+                // Error assertions
+                expect(error).to.be.an.instanceOf(Error);
+                expect(error.message).to.eq(this.errorMessage);
+
+                // Instance assertions
+                expect(instance.generatedDebouncer.next.callCount).to.eq(1);
+                expect(instance.generatedDebouncer.next().value.callCount).to.eq(1);
+            } finally {
+                expect(errorThrown).to.eq(true);
+            }
+        });
     });
 
     describe('reboot', function() {
