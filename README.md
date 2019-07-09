@@ -197,6 +197,21 @@ instance.on('shutdown', () => {
 
 And it will print the precise line that emits the event.
 
+* Your callback can return a promise. To get the response (returned value) of your callback, you can listen to the event called `responseFromCallback` like this:
+
+```js
+const Debouncer = require('@addr/debouncer');
+
+const instance = new Debouncer(
+    4000,
+    myData => new Promise(resolve => resolve("I'm being executed after 4s with " + myData))
+);
+
+instance.on('responseFromCallback', console.log); // this will print I'm being executed after 4s with My data
+
+instance.debounce('My data');
+```
+
 ## Tests
 
 To run the tests you just need to run this command:
