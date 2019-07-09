@@ -18,7 +18,7 @@ function* debouncerGenerator(instanceTime, instanceCallback) {
                         this.emit(this.events[3]);
 
                         lastData = cloneDeep(currentData);
-                        nullIterations && this.options.onlyCountContiguosIterations && (nullIterations = 0);
+                        nullIterations && this.options.onlyCountContiguousIterations && (nullIterations = 0);
                         this.emit(this.events[6], await callback(currentData));
                     } else {
                         this.emit(this.events[4]);

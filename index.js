@@ -5,7 +5,7 @@ const validator = require('./validations');
 
 const baseOptions = {
     nullIterationsToShutdown: 3,
-    onlyCountContiguosIterations: true,
+    onlyCountContiguousIterations: true,
     shutdownAfterError: true,
     events: [
         'shutdown',
@@ -73,7 +73,15 @@ class Debouncer extends EventEmitter {
         validator.validateOptions(paramOptions);
 
         this.options = paramOptions;
+        this.removeAllListeners(this.options.events[0]);
+        this.removeAllListeners(this.options.events[1]);
+        this.removeAllListeners(this.options.events[5]);
+
         this.events = this.options.events;
+
+        this.on(this.options.events[0], () => this.shutdownNow());
+        this.on(this.options.events[1], () => this.shutdownAfterCurrentIteration());
+        this.on(this.options.events[5], () => this.reboot());
     }
 
 }
