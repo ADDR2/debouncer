@@ -93,7 +93,7 @@ const baseOptions = {
 */
 const instance = new Debouncer(
     4000,
-    myData => console.log('I'm being executed after 4s with', myData),
+    myData => console.log("I'm being executed after 4s with", myData),
     {
         nullIterationsToShutdown: 5,
         onlyCountContiguousIterations: false,
@@ -113,7 +113,7 @@ shutdownNow();
 
 shutdownAfterCurrentIteration();
 
-reboot(time = 1000, callback = () => {}, options = baseOptions);
+reboot(time = 1000, callback = () => {}, options = {});
 
 changeTime(newTime = 1000);
 

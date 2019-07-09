@@ -46,11 +46,13 @@ class Debouncer extends EventEmitter {
         this.generatedDebouncer.next().value({ type: 'shutdownAfterCurrentIteration' });
     }
 
-    reboot(time = 1000, callback = () => {}, options = baseOptions) {
-        validator.validateParams(time, callback, options);
+    reboot(time = 1000, callback = () => {}, options = {}) {
+        const paramOptions = { ...baseOptions, ...options };
+
+        validator.validateParams(time, callback, paramOptions);
         this.shutdownNow();
 
-        this.options = options;
+        this.options = paramOptions;
         this.events = this.options.events;
         this.generatedDebouncer = debouncerGenerator.call(this, time, callback);
     }
