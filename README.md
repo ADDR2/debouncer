@@ -212,6 +212,22 @@ instance.on('responseFromCallback', console.log); // this will print I'm being e
 instance.debounce('My data');
 ```
 
+* You can prevent the Debouncer from shutting down atomatically by passing `nullIterationsToShutdown` in `0` or any falsy value. Example:
+
+```js
+const Debouncer = require('@addr/debouncer');
+
+const instance = new Debouncer(
+    4000,
+    myData => new Promise(resolve => resolve("I'm being executed after 4s with " + myData)),
+    { nullIterationsToShutdown: null } // Any falsy value....undefined, null, 0, '', "", etc
+);
+
+instance.debounce('My data');
+
+// This will never stop
+```
+
 ## Tests
 
 To run the tests you just need to run this command:
