@@ -1,6 +1,6 @@
 {
   "name": "@addr/debouncer",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,10 @@
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ADDR2/debouncer"
   },
   "devDependencies": {
     "chai": "^4.2.0",

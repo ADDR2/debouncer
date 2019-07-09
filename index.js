@@ -53,8 +53,16 @@ class Debouncer extends EventEmitter {
         this.shutdownNow();
 
         this.options = paramOptions;
+        this.removeAllListeners(this.options.events[0]);
+        this.removeAllListeners(this.options.events[1]);
+        this.removeAllListeners(this.options.events[5]);
+
         this.events = this.options.events;
         this.generatedDebouncer = debouncerGenerator.call(this, time, callback);
+
+        this.on(this.options.events[0], () => this.shutdownNow());
+        this.on(this.options.events[1], () => this.shutdownAfterCurrentIteration());
+        this.on(this.options.events[5], () => this.reboot());
     }
 
     changeTime(newTime = 1000) {
