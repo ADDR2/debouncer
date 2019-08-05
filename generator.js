@@ -9,8 +9,8 @@ function* debouncerGenerator(instanceTime, instanceCallback) {
     let currentData = null;
     let firstTime = true;
     let nullIterations = 0;
-    
-    const recursiveTimer = () => {
+
+    const timerGenerator = () => new Promise((resolve, reject) => {
         timer = setTimeout(
             async () => {
                 try {
@@ -29,13 +29,22 @@ function* debouncerGenerator(instanceTime, instanceCallback) {
 
                     this.options.shutdownAfterError && (shutdown = true);
                 } finally {
-                    !shutdown && recursiveTimer();
-                    shutdown && clearTimeout(timer);
-                    this.options.nullIterationsToShutdown && this.options.nullIterationsToShutdown === nullIterations && clearTimeout(timer);
+                    !shutdown && resolve();
+
+                    if (shutdown || (this.options.nullIterationsToShutdown && this.options.nullIterationsToShutdown === nullIterations)) {
+                        clearTimeout(timer);
+                        reject();
+                    }
                 }
             },
             time
         );
+    });
+    
+    const iterativeTimer = async () => {
+        do {
+            try { await timerGenerator(); } catch(_) {}
+        } while(!shutdown);
     };
 
     while(!shutdown) {
@@ -48,14 +57,14 @@ function* debouncerGenerator(instanceTime, instanceCallback) {
                     return false;
                 case 'addData':
                     currentData = params.data;
-                    firstTime && recursiveTimer();
+                    firstTime && iterativeTimer();
                     firstTime = false;
 
                     return true;
 
                 case 'shutdownAfterCurrentIteration':
                     shutdown = true;
-                    firstTime && recursiveTimer();
+                    firstTime && iterativeTimer();
                     firstTime = false;
 
                     return true;
