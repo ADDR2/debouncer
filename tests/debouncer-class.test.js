@@ -10,7 +10,7 @@ const { createInstanceWithFakeNext } = require('../helpers/Instance-faker');
 
 const baseOptions = {
     nullIterationsToShutdown: 3,
-    onlyCountContiguosIterations: true,
+    onlyCountContiguousIterations: true,
     shutdownAfterError: true,
     events: [
         'shutdown',
